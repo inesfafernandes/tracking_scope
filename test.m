@@ -1,18 +1,19 @@
-dq = daq("ni");
-dq.Rate = 8000;
-addoutput(dq, "Dev1", "ao0", "Voltage");
-addoutput(dq, "Dev1", "ao1", "Voltage");
-
-%vectors size
-n = dq.Rate;
-
+npts=16
+step = cos(linspace(0,2*pi,npts)');
+outputSignal1 = sin(linspace(0,2*pi,npts)');
 %%
-%signal creation
-outputSignal1 = sin(linspace(0,2*pi,n)');
-outputSignal2 = linspace(-1,1,n)';
+hold on
+plot(step)
+plot(outputSignal1)
+hold off
+%%
+conv_sig=conv(step,outputSignal1,'same');
+fft_step=fft(step);
+fft_signal=fft(outputSignal1);
+mult_fft=fft_step.*fft_signal;
+ifft_mult=ifft(mult_fft);
 
-outputSignal=[outputSignal1 outputSignal2];
-
-while 1
-    write(dq, outputSignal);   
-end
+figure(1)
+plot(conv_sig);
+figure(2)
+plot(ifft_mult);
