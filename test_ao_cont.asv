@@ -14,7 +14,7 @@ n = dq.Rate;
 reps=1; %initialization of reps
 %creation of signals
 outputSignal1 = sin(linspace(0,2*pi,n)');
-outputSignal2 = linspace(-1,1,n)'; 
+outputSignal2 = cos(linspace(0,2*pi,n)'); 
 outputSignal=[outputSignal1 outputSignal2];
 
 dq.ScansRequiredFcn  = @loadmoredata; % assign callback function to the ScansRequiredFcn of the daq to continuosly generate the output data
@@ -29,20 +29,19 @@ while true
 end
       % function to write the signal
       function []=loadmoredata(obj,evt)
-        reps=reps+1;
+%         reps=reps+1;
 %         noise=randn(n,1);
 
-            outputSignalNew= min(max(noise,-1),1);% sets signal to be noise betwaeen 1 and -1
-            outputSignalNew=[outputSignalNew outputSignalNew]
-            %outputSignalNew=repmat(outputSignalNew,1,2);
+%             outputSignalNew= min(max(noise,-1),1);% sets signal to be noise betwaeen 1 and -1
+%             outputSignalNew=repmat(outputSignalNew,1,2); % creates matrix with 2 outputSignalNew to feed into both channels
 %         outputSignalNew= noise;
 %         plot(outputSignalNew)
 %         drawnow
-%         outputSignalNew=outputSignal*0.1*reps;
+        outputSignalNew=outputSignal;
         
-        if reps==5
-            outputSignalNew=outputSignal*0.5*reps;
-        end
+%         if reps==5
+%             outputSignalNew=outputSignal*0.5*reps;
+%         end
 
         write(obj,outputSignalNew)
       end

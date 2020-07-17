@@ -1,24 +1,21 @@
-%% reads and writes continously
-
-% function []=testai2()
+%% sends an input to the stage and reads its response; calculates the stage Kernel (H)
 
 dq = daq("ni"); %create data acquisition
 dq.Rate = 8000; %set the generation scan rate
-addoutput(dq, "Dev1", "ao0", "Voltage"); % adds analog output channel
+addoutput(dq, "Dev1", "ao1", "Voltage"); % adds analog output channel
 addinput(dq, "Dev1", "ai1", "Voltage"); % adds analog input channel
 
 %vectors size
 n = dq.Rate;
-global data;
+global data;%creates global variable data that stores de input signal being read
 data = [];
-global reps;
+global reps;%creates global variable reps
 reps=1; %initialization of reps
 %creation of signals
 
-global outputSignal1;
-outputSignal1 = sin(linspace(0,2*pi,n)');
-% outputSignal2 = linspace(-1,1,n)';
-% outputSignal=[outputSignal1 outputSignal2];
+global outputSignal1; %creates global variable outputSignal1
+outputSignal1=randn(n,1);
+outputSignal1=min(max(outputSignal1,-1),1);
 
 dq.ScansRequiredFcn  = @loadmoredata; % assign callback function to the ScansRequiredFcn of the daq to continuosly generate the output data
 
@@ -29,17 +26,10 @@ preload(dq, repmat(outputSignal1,2,1)) % Before starting a continuous generation
 start(dq, "Continuous") % to initiate the generation in continuos form
 
 start(dq); % to initiate the acquisition
-i=0;
 
-while true
-    pause (0.1)
-end
+%H=system_identification_fc( outputSignal1, data) %uses function to return kernel H
 
-
-
-
-
-
-% [data]= plotMyData(obj,evt);
-
+% while true
+%     pause (0.1)
 % end
+
