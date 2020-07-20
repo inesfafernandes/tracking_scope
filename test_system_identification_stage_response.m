@@ -1,14 +1,14 @@
 %% Reads and writes a signal, but not in a continous form
 
 dq = daq("ni"); %create data acquisition
-dq.Rate = 1000; %set the generation scan rate; rate cant be the same as K (check system_identification_fc)
+dq.Rate = 700; %set the generation scan rate; rate cant be the same as K (check system_identification_fc)
 addoutput(dq, "Dev1", "ao1", "Voltage");% adds analog output channel 
 addinput(dq, "Dev1", "ai1", "Voltage");% adds analog input channel 
-K=200;
+K=350;
 
 lim=10;
 
-outScanData = min(max(randn(1e4,1),-lim),lim); %creation of signal
+outScanData = min(max(5*randn(1e5,1),-lim),lim); %creation of signal
 inScanData = readwrite(dq,outScanData); % writes outScanData to the daq interface output channels, and reads inScanData from the daq interface input channels
 figure(1)
 plot(outScanData);title ('input');
@@ -16,4 +16,5 @@ figure(2)
 plot(inScanData.Time,inScanData.Dev1_ai1);title('output'); %plots the signal read
 
 H=system_identification_fc(outScanData, inScanData.Dev1_ai1,K);
+csvwrite('H_noise',H);
 

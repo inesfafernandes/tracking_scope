@@ -17,5 +17,6 @@ function H = system_identification_fc (x_input,y_output,K)
     H=X\Y;
     
     figure;plot(H);title('H');
+    saveas(gcf,'stage response_K_rate.png');
 end
 
