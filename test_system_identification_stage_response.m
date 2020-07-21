@@ -8,13 +8,20 @@ K=350;
 
 lim=10;
 
-outScanData = min(max(5*randn(1e5,1),-lim),lim); %creation of signal
+input=zeros(5000,1);
+input(5001:10000,1)=1;
+
+outScanData = input; %min(max(5*randn(1e5,1),-lim),lim); %creation of signal
 inScanData = readwrite(dq,outScanData); % writes outScanData to the daq interface output channels, and reads inScanData from the daq interface input channels
 figure(1)
-plot(outScanData);title ('input');
-figure(2)
-plot(inScanData.Time,inScanData.Dev1_ai1);title('output'); %plots the signal read
+hold on
+plot(outScanData);%title ('input');
+plot(inScanData.Dev1_ai1);%title('output'); %plots the signal read
+plot(outScanData-inScanData.Dev1_ai1);%title('error');
+legend('input','output','error');
+hold off
+
 
 H=system_identification_fc(outScanData, inScanData.Dev1_ai1,K);
-csvwrite('H_noise',H);
+%csvwrite('H_noise',H);
 
