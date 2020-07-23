@@ -14,10 +14,10 @@ function H = system_identification_fc (x_input,y_output,K)
         X(i+1,:)=x(K+i:-1:K-(K-i)+1);
     end
     
-    %Xflipped=fliplr(X);
-    H=X\Y;
+    Xflipped=fliplr(X);
+    H=Xflipped\Y;
     
     figure;plot(H);title('H');
-    %saveas(gcf,'stage response_K_rate.fig');
+    saveas(gcf,'stage response_K_rate.fig');
 end
 
