@@ -1,15 +1,15 @@
 %%following fish trajectory_x
 
 read_trajectory=readtable('x_trajectory.csv');
-load('H_noise_flipped.mat');
-H_flipped = H;
+load('H_noise_new_rate700.mat');
+H_noise = H;
 
 %read_H=readtable('H_noise.csv');
 x_trajectory=read_trajectory.Var1/10;
 %H_noise=read_H.Var1;
 
-theoretical_out=conv(x_trajectory,H_flipped,'same');
-%theoretical_out=conv(x_trajectory,H_noise(end:-1:1),'same');
+%theoretical_out=conv(x_trajectory,H_flipped,'same');
+theoretical_out=conv(x_trajectory,H_noise(end:-1:1),'same');
 
 dq = daq("ni"); %create data acquisition
 dq.Rate = 700; %set the generation scan rate; rate cant be the same as K (check system_identification_fc)
