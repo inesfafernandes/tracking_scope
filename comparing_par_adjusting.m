@@ -1,3 +1,5 @@
+%% comparing H and cumsum of H for different PID parameters
+
 load('H_noise_new_rate700_smooth_100.mat');
 h1=H;
 load('H_noise_new_rate700_smooth_100_testing_par1.mat');

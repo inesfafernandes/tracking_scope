@@ -35,8 +35,9 @@ plot(acc_in);
 hold off
 
 
-H=system_identification_fc(outScanData, inScanData.Dev1_ai1,K);
-save('H_noise_new_rate700_smooth_100_testing_par12','H');
+%H=system_identification_fc(outScanData, inScanData.Dev1_ai1,K);
+H=system_identification_fc(acc_in, acc, K);
+save('H_noise_new_rate700_smooth_100_testing_par','H');
 
 figure(3)
 plot(cumsum(H));
