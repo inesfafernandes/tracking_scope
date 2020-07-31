@@ -45,17 +45,17 @@ hold on
 plot(outScanData_cut);title ('input vs outputs');
 plot(inScanDat); %plots the signal read;
 plot(theoretical_out_hr);
-plot(theoretical_out_par6);
-plot(theoretical_out_par8);
+%plot(theoretical_out_par6);
+%plot(theoretical_out_par8);
 legend('input','output read','output computed (high robustness)','output computed (par6)','output computed (par8)');
 hold off
 figure(2)
 hold on
 plot(exp_error);title('error');%title('experimental vs theoretical error');
 plot(theo_error_hr);
-plot(theo_error_hr_acc);
-plot(theo_error_par6);
-plot(theo_error_par8);
+%plot(theo_error_hr_acc);
+%plot(theo_error_par6);
+%plot(theo_error_par8);
 legend('experimental','theoretical_hr','theoretical_hr_acc','theoretical_par6', 'theoretical_par8');
 hold off
 
@@ -64,7 +64,7 @@ hold on
 plot(outScanData_cut);title ('input vs outputs');
 plot(inScanDat); %plots the signal read;
 plot(theoretical_out_hr);
-plot(theoretical_out_hr_acc);
+%plot(theoretical_out_hr_acc);
 legend('input','output read','output computed (high robustness)','output computed (high robustness_acc)');
 hold off
 
