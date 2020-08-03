@@ -3,26 +3,28 @@
 read_trajectory=readtable('x_trajectory.csv');
 load('H_noise_new_rate700_smooth_100.mat');
 H_noise_hr = H/sum(H);
-load('H_noise_new_rate700_smooth_100_testing_par6.mat');
-H_noise_par6 = H/sum(H);
-load('H_noise_new_rate700_smooth_100_testing_par8.mat');
-H_noise_par8 = H/sum(H);
-load('H_noise_new_rate700_smooth_100_testing_high-robustness_acc.mat');
-H_noise_hr_acc=H/sum(H);
+% load('H_noise_new_rate700_smooth_100_testing_par6.mat');
+% H_noise_par6 = H/sum(H);
+% load('H_noise_new_rate700_smooth_100_testing_par8.mat');
+% H_noise_par8 = H/sum(H);
+% load('H_noise_new_rate700_smooth_100_testing_high-robustness_acc.mat');
+% H_noise_hr_acc=H/sum(H);
 
 %read_H=readtable('H_noise.csv');
 x_trajectory=read_trajectory.Var1/10;
 %H_noise=read_H.Var1;
 
+scale=10;
 p=length(H);
 addzeros=zeros(p,1);
 addbegin_trajectory=cat(1,addzeros,x_trajectory);
+vel_command=(diff(addbegin_trajectory)/(1/dq.Rate))/scale;
 
 %theoretical_out=conv(x_trajectory,H_flipped,'same');
 theoretical_out_hr=conv(addbegin_trajectory,H_noise_hr,'valid');
-theoretical_out_hr_acc=conv(addbegin_trajectory,H_noise_hr_acc,'valid');
-theoretical_out_par6=conv(addbegin_trajectory,H_noise_par6,'valid');
-theoretical_out_par8=conv(addbegin_trajectory,H_noise_par8,'valid');
+% theoretical_out_hr_acc=conv(addbegin_trajectory,H_noise_hr_acc,'valid');
+% theoretical_out_par6=conv(addbegin_trajectory,H_noise_par6,'valid');
+% theoretical_out_par8=conv(addbegin_trajectory,H_noise_par8,'valid');
 
 dq = daq("ni"); %create data acquisition
 dq.Rate = 700; %set the generation scan rate; rate cant be the same as K (check system_identification_fc)
@@ -31,13 +33,14 @@ addinput(dq, "Dev1", "ai1", "Voltage");% adds analog input channel
 %K=350;
 
 outScanData = addbegin_trajectory;  %creation of signal
+%outScanData=vel_command;
 inScanData = readwrite(dq,outScanData); % writes outScanData to the daq interface output channels, and reads inScanData from the daq interface input channels
 outScanData_cut = outScanData(p:end);
 inScanDat=inScanData.Dev1_ai1(p:end);
 theo_error_hr=outScanData_cut-theoretical_out_hr;
-theo_error_hr_acc=outScanData_cut-theoretical_out_hr_acc;
-theo_error_par6=outScanData_cut-theoretical_out_par6;
-theo_error_par8=outScanData_cut-theoretical_out_par8;
+% theo_error_hr_acc=outScanData_cut-theoretical_out_hr_acc;
+% theo_error_par6=outScanData_cut-theoretical_out_par6;
+% theo_error_par8=outScanData_cut-theoretical_out_par8;
 exp_error=outScanData_cut-inScanDat;
 
 figure (1)
