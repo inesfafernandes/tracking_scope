@@ -6,14 +6,14 @@ addoutput(dq, "Dev1", "ao1", "Voltage");% adds analog output channel
 addinput(dq, "Dev1", "ai1", "Voltage");% adds analog input channel 
 K=500;
 
-lim=10;
+lim=10;%10
 
 %input=zeros(50000,1);
 %input(50001:100000,1)=1;
 
 outScanData = min(max(randn(1e5,1),-lim),lim); %creation of signal
 outScanData(1:100)=0;
-outScanData = smooth(outScanData,100);
+outScanData = smooth(outScanData,100); %100
 
 % acc_in2=diff(diff(outScanData2))*(700^2)*10;
 % figure
@@ -35,10 +35,10 @@ plot(acc_in);
 hold off
 
 
-%H=system_identification_fc(outScanData, inScanData.Dev1_ai1,K);
-H=system_identification_fc(acc_in, acc, K);
-save('H_noise_new_rate700_smooth_100_testing_par','H');
-
+H=system_identification_fc(outScanData, inScanData.Dev1_ai1,K);
+%H=system_identification_fc(acc_in, acc, K);
+save('H_velocity','H');
+%%
 figure(3)
 plot(cumsum(H));
 %%

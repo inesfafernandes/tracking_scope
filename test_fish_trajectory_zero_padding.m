@@ -10,15 +10,14 @@ H_noise_hr = H/sum(H);
 % load('H_noise_new_rate700_smooth_100_testing_high-robustness_acc.mat');
 % H_noise_hr_acc=H/sum(H);
 
-%read_H=readtable('H_noise.csv');
 x_trajectory=read_trajectory.Var1/10;
-%H_noise=read_H.Var1;
 
-scale=10;
+
+%scale=10;
 p=length(H);
 addzeros=zeros(p,1);
 addbegin_trajectory=cat(1,addzeros,x_trajectory);
-vel_command=(diff(addbegin_trajectory)/(1/dq.Rate))/scale;
+%vel_command=(diff(addbegin_trajectory)/(1/dq.Rate))/scale;
 
 %theoretical_out=conv(x_trajectory,H_flipped,'same');
 theoretical_out_hr=conv(addbegin_trajectory,H_noise_hr,'valid');
@@ -37,6 +36,7 @@ outScanData = addbegin_trajectory;  %creation of signal
 inScanData = readwrite(dq,outScanData); % writes outScanData to the daq interface output channels, and reads inScanData from the daq interface input channels
 outScanData_cut = outScanData(p:end);
 inScanDat=inScanData.Dev1_ai1(p:end);
+save('output_read_position','inScanDat');
 theo_error_hr=outScanData_cut-theoretical_out_hr;
 % theo_error_hr_acc=outScanData_cut-theoretical_out_hr_acc;
 % theo_error_par6=outScanData_cut-theoretical_out_par6;

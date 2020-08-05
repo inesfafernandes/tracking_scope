@@ -9,7 +9,7 @@ T=3000; %time window of the future
 [lin,~]=size(h);
 N=lin; %past time
 M=T+N-1; % total window of time
-lambda=1e-2; %constant value to minimize variation of voltage
+lambda=1e-4; %constant value to minimize variation of voltage
 phi=zeros(T,M);
 phi(1,:)=cat(1,h(end:-1:1),zeros(T-1,1)); %sliding window of h
 phi_a=zeros(T,N-1);
@@ -60,7 +60,7 @@ title('stage trajectory');
 
 figure(3)
 hold on
-plot(fake_trajectory);
+plot(fake_trajectory(500:end));
 plot(trajectory);
 legend('xstar','stage trajectory');
 title('xstar vs stage trajectory');
