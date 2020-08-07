@@ -4,7 +4,7 @@ dq = daq("ni"); %create data acquisition
 dq.Rate = 700; %set the generation scan rate; rate cant be the same as K (check system_identification_fc)
 addoutput(dq, "Dev1", "ao1", "Voltage");% adds analog output channel 
 addinput(dq, "Dev1", "ai1", "Voltage");% adds analog input channel 
-K=500;
+K=200;
 
 lim=10;%10
 
@@ -37,7 +37,7 @@ hold off
 
 H=system_identification_fc(outScanData, inScanData.Dev1_ai1,K);
 %H=system_identification_fc(acc_in, acc, K);
-save('H_velocity','H');
+save('H_smaller','H');
 %%
 figure(3)
 plot(cumsum(H));

@@ -8,7 +8,7 @@ addinput(dq, "Dev1", "ai1", "Voltage");% adds analog input channel
 read_trajectory=readtable('x_trajectory.csv');
 x_trajectory=read_trajectory.Var1;
 
-scale=10;%in the C# app
+scale=50;%in the C# app
 vel_command=(diff(x_trajectory)/(1/dq.Rate))/scale;
 
 %lim=10;

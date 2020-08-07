@@ -1,11 +1,11 @@
 %% MPC
 read_trajectory=readtable('x_trajectory.csv');
 x_trajectory=read_trajectory.Var1/10;
-fish_trajectory=x_trajectory(14000:17000-1);
+fish_trajectory=x_trajectory(14000:16000-1);
 
 load('H_noise_new_rate700_smooth_100.mat');
 h=H/sum(H);
-T=3000; %time window of the future
+T=2000; %time window of the future
 [lin,~]=size(h);
 N=lin; %past time
 M=T+N-1; % total window of time
@@ -57,6 +57,8 @@ figure(2)
 trajectory=conv(u,h,'valid');
 plot(trajectory);
 title('stage trajectory');
+
+save('command_once','u');
 
 figure(3)
 hold on
