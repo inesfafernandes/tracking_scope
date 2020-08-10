@@ -4,7 +4,7 @@ read_trajectory=readtable('x_trajectory.csv');
 x_trajectory=read_trajectory.Var1/10;% since the fish trajectory is in mm we need to convert it to cm
 fish_trajectory=x_trajectory(14000:16000-1);%we take only a portion of the fish trajectory (in this case the part which has the biggest error)
 
-load('H_smaller.mat');%loading the h file
+load('H_smaller_100.mat');%loading the h file
 h=H/sum(H);
 T=20; %time window of the future
 [lin,~]=size(h);
@@ -45,13 +45,21 @@ for t=1:length(fish_trajectory)
 end
 
 %taking into consideration tail movement
-for t=1:length(fish_trajectory)
-    if theta<= x
-        uf=const_up*((fish_trajectory(t)*model_x)-phi_a*up);%computing u future x axis
-        %uf_y=const_up*((fish_trajectory_y(t)*model_x)-phi_a*up); %computing u future y axis
-        up=cat(1,up,uf(1));% updating u past by adding the first element of uf as the last element of u past
-        up(1)=[];% and discarding the first value of u past
-        u=cat(1,u,uf(1));%vector that contains all commands that were sent
+% for t=1:length(fish_trajectory)
+%     if theta<= m
+%         uf=const_up*((fish_trajectory(t)*model_m)-phi_a*up);%computing u future x axis
+%         %uf_y=const_up*((fish_trajectory_y(t)*model_x)-phi_a*up); %computing u future y axis
+%         up=cat(1,up,uf(1));% updating u past by adding the first element of uf as the last element of u past
+%         up(1)=[];% and discarding the first value of u past
+%         u=cat(1,u,uf(1));%vector that contains all commands that were sent
+%     else
+%         uf=const_up*((fish_trajectory(t)*model_n)-phi_a*up);%computing u future x axis
+%         %uf_y=const_up*((fish_trajectory_y(t)*model_n)-phi_a*up); %computing u future y axis
+%         up=cat(1,up,uf(1));% updating u past by adding the first element of uf as the last element of u past
+%         up(1)=[];% and discarding the first value of u past
+%         u=cat(1,u,uf(1));%vector that contains all commands that were sent
+%     end
+% end
 
 figure(1)
 hold on
@@ -66,7 +74,7 @@ trajectory=conv(u,h,'valid');%trajectory of the stage
 plot(trajectory);
 title('stage trajectory');
 
-save ('command_continous','u');
+%save ('command_continous','u');
 
 figure(3)
 hold on

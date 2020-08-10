@@ -4,7 +4,7 @@ read_trajectory=readtable('x_trajectory.csv');
 x_trajectory=read_trajectory.Var1/10;% since the fish trajectory is in mm we need to convert it to cm
 fish_trajectory=x_trajectory(14000:16000-1);%we take only a portion of the fish trajectory (in this case the part which has the biggest error)
 
-load('H_smaller.mat');%loading the h file
+load('H_smaller_100.mat');%loading the h file
 h=H/sum(H);
 T=20; %time window of the future
 [lin,~]=size(h);
@@ -74,7 +74,7 @@ trajectory=conv(u,h,'valid');%trajectory of the stage
 plot(trajectory);
 title('stage trajectory');
 
-save ('command_continous','u');
+%save ('command_continous','u');
 
 figure(3)
 hold on
