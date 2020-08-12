@@ -64,10 +64,11 @@ plot(error_MPC_T20_naive_model);
 plot(error_MPC_T50_naive_model);
 plot(error_MPC_T100_naive_model);
 legend('error direct command','error MPC T20 know future','error MPC T50 know future','error MPC T100 know future','error MPC T20 naive model','error MPC T50 naive model','error MPC T100 naive model');
+title('error');
 hold off
 
 l = cell(1,3);
-l{1}='<1/3'; l{2}='>1/3 & <2/3'; l{3}='>2/3' 
+l{1}='<1/3'; l{2}='>1/3 & <2/3'; l{3}='>2/3' ;
 
 figure(2)
 subplot(2,4,1)
@@ -109,16 +110,62 @@ plot(RMSE_MPC_T20_naive_model);
 plot(RMSE_MPC_T50_naive_model);
 plot(RMSE_MPC_T100_naive_model);
 legend('error direct command','error MPC T20 know future','error MPC T50 know future','error MPC T100 know future','error MPC T20 naive model','error MPC T50 naive model','error MPC T100 naive model');
+title('root mean square error')
 hold off
 
 l2 = cell(1,7);
-l2{1}='direct command'; l2{2}='MPC T20 know future'; l2{3}='MPC T50 know future' ;l2{4}='MPC T100 know future' ;l2{5}='MPC T20 naive model'; l2{6}='MPC T50 naive model' ;l2{7}='MPC T100 naive model'
+l2{1}='direct command'; l2{2}='MPC T20 know future'; l2{3}='MPC T50 know future' ;l2{4}='MPC T100 know future' ;l2{5}='MPC T20 naive model'; l2{6}='MPC T50 naive model' ;l2{7}='MPC T100 naive model';
 
 figure(4)
-bar(max_errors)
-set(gca,'xticklabel', l2) 
+bar(max_errors);
+set(gca,'xticklabel', l2); 
+title('maximum errors')
+
+thres=0.01;
+accuracy_direct_command=accuracy_calculator(RMSE_direct_command,thres);
+accuracy_MPC_T20_know_future=accuracy_calculator(RMSE_MPC_T20_know_future,thres);
+accuracy_MPC_T50_know_future=accuracy_calculator(RMSE_MPC_T50_know_future,thres);
+accuracy_MPC_T100_know_future=accuracy_calculator(RMSE_MPC_T100_know_future,thres);
+accuracy_MPC_T20_naive_model=accuracy_calculator(RMSE_MPC_T20_naive_model,thres);
+accuracy_MPC_T50_naive_model=accuracy_calculator(RMSE_MPC_T50_naive_model,thres);
+accuracy_MPC_T100_naive_model=accuracy_calculator(RMSE_MPC_T100_naive_model,thres);
+
+pie_direct_command=[accuracy_direct_command  length(RMSE_direct_command)-accuracy_direct_command];
+pie_MPC_T20_know_future=[accuracy_MPC_T20_know_future  length(RMSE_direct_command)-accuracy_MPC_T20_know_future];
+pie_MPC_T50_know_future=[accuracy_MPC_T50_know_future  length(RMSE_direct_command)-accuracy_MPC_T50_know_future];
+pie_MPC_T100_know_future=[accuracy_MPC_T100_know_future  length(RMSE_direct_command)-accuracy_MPC_T100_know_future];
+pie_MPC_T20_naive_model=[accuracy_MPC_T20_naive_model  length(RMSE_direct_command)-accuracy_MPC_T20_naive_model];
+pie_MPC_T50_naive_model=[accuracy_MPC_T50_naive_model  length(RMSE_direct_command)-accuracy_MPC_T50_naive_model];
+pie_MPC_T100_naive_model=[accuracy_MPC_T100_naive_model  length(RMSE_direct_command)-accuracy_MPC_T100_naive_model];
 
 
+figure(5)
+subplot(2,4,1)
+labels = {'<100micro','>100micro'};
+pie(pie_direct_command);
+legend(labels)
+subplot(2,4,2)
+labels = {'<100micro','>100micro'};
+pie(pie_MPC_T20_know_future)
+legend(labels)
+subplot(2,4,3)
+labels = {'<100micro','>100micro'};
+pie(pie_MPC_T50_know_future);
+legend(labels)
+subplot(2,4,4)
+labels = {'<100micro','>100micro'};
+pie(pie_MPC_T100_know_future)
+legend(labels)
+subplot(2,4,5)
+labels = {'<100micro','>100micro'};
+pie(pie_MPC_T20_naive_model)
+legend(labels)
+subplot(2,4,6)
+labels = {'<100micro','>100micro'};
+pie(pie_MPC_T50_naive_model);
+legend(labels)
+subplot(2,4,7)
+labels = {'<100micro','>100micro'};
+pie(pie_MPC_T100_naive_model)
+legend(labels)
 
-     
-        
