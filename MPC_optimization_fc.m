@@ -25,13 +25,17 @@ function u = MPC_optimization_fc (fish_trajectory,h,T)
         end
     end
 
-    phi_a(2:T,:)=phi(2:T,1:499);% sliding window of h for past values
-    phi_b(2:T,:)=phi(2:T,500:end); %sliding window of h for future values
+    phi_a(2:T,:)=phi(2:T,1:N-1);% sliding window of h for past values
+    phi_b(2:T,:)=phi(2:T,N:end); %sliding window of h for future values
     
     const_up=((lambda*I+phi_b'*phi_b)\phi_b');
    
-    for t=1:length(fish_trajectory)
-        uf=const_up*((fish_trajectory(t)*model)-phi_a*up);%computing u future
+    for t=1:length(fish_trajectory)-T
+        predicted_fish_trajectory=fish_trajectory(t:t+T-1);
+        predicted_stage_trajectory=phi_a*up;
+        predicted_error=predicted_fish_trajectory-predicted_stage_trajectory;
+        uf=const_up*(predicted_error);%computing u future x axis
+        %uf_y=const_up*((fish_trajectory_y(t)*model)-phi_a*up); %computing u future y axis
         up=cat(1,up,uf(1));% updating u past by adding the first element of uf as the last element of u past
         up(1)=[];% and discarding the first value of u past
         u=cat(1,u,uf(1));%vector that contains all commands that were sent

@@ -16,7 +16,7 @@ x_trajectory=read_trajectory.Var1/10;
 %scale=10;
 p=length(H);
 addzeros=zeros(p,1);
-addbegin_trajectory=cat(1,addzeros,x_trajectory);
+addbegin_trajectory=cat(1,addzeros,x_trajectory(14000:17000-1));
 %vel_command=(diff(addbegin_trajectory)/(1/dq.Rate))/scale;
 
 %theoretical_out=conv(x_trajectory,H_flipped,'same');

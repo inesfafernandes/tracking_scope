@@ -40,7 +40,7 @@ hold on
 plot(command_continous(499:end));
 plot(command_once(499:end));
 plot(fish_trajectory);
-legend('u_continous_MPC','u_once_MPC','fish trajectory')
+legend('u-continous-MPC','u-once-MPC','fish trajectory')
 title('xstar and voltage command');
 hold off
 
