@@ -2,11 +2,11 @@
 
 read_trajectory=readtable('x_trajectory.csv');
 x_trajectory=read_trajectory.Var1/10;% since the fish trajectory is in mm we need to convert it to cm
-fish_trajectory=x_trajectory(14000:17000-1);%we take only a portion of the fish trajectory (in this case the part which has the biggest error)
+fish_trajectory=x_trajectory;%(14000:17000-1);%we take only a portion of the fish trajectory (in this case the part which has the biggest error)
 
 load('H_noise_new_rate700_smooth_100.mat');%loading the h file
 h=H/sum(H);
-T=20; %time window of the future
+T=150; %time window of the future
 [lin,~]=size(h);
 N=lin; %past time (which is the size of vector h)
 M=T+N-1; % total window of time
@@ -87,9 +87,11 @@ legend('xstar','stage trajectory');
 title('xstar vs stage trajectory');
 hold off
 
-% figure(4)
-% plot(fish_trajectory(1:1900)-trajectory);
-% title('error');
+dif=abs(length(fish_trajectory)-length(trajectory));
+
+figure(4)
+plot(fish_trajectory(1:end-dif)-trajectory);
+title('error');
 
 
     
