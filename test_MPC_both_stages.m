@@ -15,7 +15,7 @@ addoutput(dq, "Dev1", "ao0", "Voltage");
 addinput(dq, "Dev1", "ai1", "Voltage");
 addoutput(dq, "Dev1", "ao1", "Voltage");
 
-u_1 = MPC_optimization_fc(x_trajectory,h,T);
+u_1 = MPC_optimization_fc(x_trajectory,h,T); %using the MPC to calculate the best voltage command to send to each stage
 u_2 = MPC_optimization_fc(-1*x_trajectory,h,T);
 
 outputSignal=[u_1(N-1:end) u_2(N-1:end)];
@@ -64,6 +64,7 @@ subplot(1,2,2)
 plot(stage_trajectory_2-(-1*x_trajectory(1:end-dif)))
 title('error stage 2')
 
+%calculating the euclidien distance
 euc_dist_vet=[];
 
 for i=1:length(stage_trajectory_1)
