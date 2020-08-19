@@ -18,6 +18,8 @@ download_import("datasets.py")
 download_import("plotting.py")
 download_import("steps.py")
 
+#%%importing libraries
+
 from typing import List
 from logging import warning
 
@@ -62,3 +64,185 @@ def choose_tf_device():
     return chosen_device
 
 chosen_device = choose_tf_device()
+
+#%%Stacked GRU seq2seq RNN
+
+def create_model(step: Tensorflow2ModelStep) -> tf.keras.Model: #ASK AFONSO (sintaxe)
+    """
+   Create a TensorFlow v2 sequence to sequence (seq2seq) encoder-decoder model.
+
+   :param step: The base Neuraxle step for TensorFlow v2 (Tensorflow2ModelStep)
+   :return: TensorFlow v2 Keras model
+    """
+    # shape: (batch_size, seq_length, input_dim)
+    #used to instantiate the keras tensor
+    encoder_inputs = Input(
+        shape=(None, step.hyperparams['input_dim']),
+        batch_size=None,
+        dtype=tf.dtypes.float32,
+        name='encoder_inputs'
+    )
+
+    last_encoder_outputs, last_encoders_states = _create_encoder(step, encoder_inputs)
+    decoder_outputs = _create_decoder(step, last_encoder_outputs, last_encoders_states)
+
+    return Model(encoder_inputs, decoder_outputs)
+
+def _create_encoder(step: Tensorflow2ModelStep, encoder_inputs: Input) -> (tf.Tensor, List[tf.Tensor]):
+    """
+   Create an encoder RNN using GRU Cells. GRU cells are similar to LSTM cells.
+
+   :param step: The base Neuraxle step for TensorFlow v2 (class Tensorflow2ModelStep)
+    :param encoder_inputs: encoder inputs layer of shape (batch_size, seq_length, input_dim)
+    :return: (last encoder outputs, last stacked encoders states)
+                last_encoder_outputs shape: (batch_size, hidden_dim)
+                last_encoder_states shape: (layers_stacked_count, batch_size, hidden_dim)
+    """
+    encoder = RNN(cell=_create_stacked_rnn_cells(step), return_sequences=False, return_state=True)
+
+    last_encoder_outputs_and_states = encoder(encoder_inputs)
+    # last_encoder_outputs shape: (batch_size, hidden_dim)
+    # last_encoder_states shape: (layers_stacked_count, batch_size, hidden_dim)
+
+    # refer to: https://www.tensorflow.org/api_docs/python/tf/keras/layers/RNN?version=stable#output_shape_2
+    #ASK AFONSO (o que o *)
+    last_encoder_outputs, *last_encoders_states = last_encoder_outputs_and_states
+    return last_encoder_outputs, last_encoders_states
+
+def _create_decoder(step: Tensorflow2ModelStep, last_encoder_outputs: tf.Tensor, last_encoders_states: List[tf.Tensor]) -> tf.Tensor:
+    """
+   Create a decoder RNN using GRU cells.
+
+   :param step: The base Neuraxle step for TensorFlow v2 (Tensorflow2ModelStep)
+    :param last_encoders_states: last encoder states tensor
+    :param last_encoder_outputs: last encoder output tensor
+    :return: decoder output
+    """
+    decoder_lstm = RNN(cell=_create_stacked_rnn_cells(step), return_sequences=True, return_state=False)
+
+    last_encoder_output = tf.expand_dims(last_encoder_outputs, axis=1)
+    # last encoder output shape: (batch_size, 1, hidden_dim)
+
+    replicated_last_encoder_output = tf.repeat(#Repeat elements of input
+        input=last_encoder_output,
+        repeats=step.hyperparams['window_size_future'],
+        axis=1
+    )
+    # replicated last encoder output shape: (batch_size, window_size_future, hidden_dim)
+
+    decoder_outputs = decoder_lstm(replicated_last_encoder_output, initial_state=last_encoders_states)
+    # decoder outputs shape: (batch_size, window_size_future, hidden_dim)
+    
+    decoder_dense = Dense(step.hyperparams['output_dim'])
+    # decoder outputs shape: (batch_size, window_size_future, output_dim)
+
+    return decoder_dense(decoder_outputs)
+
+def _create_stacked_rnn_cells(step: Tensorflow2ModelStep) -> List[GRUCell]:
+    """
+   Create a `layers_stacked_count` amount of GRU cells and stack them on top of each other.
+   They have a `hidden_dim` number of neuron layer size.
+
+   :param step: The base Neuraxle step for TensorFlow v2 (Tensorflow2ModelStep)
+    :return: list of gru cells
+    """
+    cells = []
+    for _ in range(step.hyperparams['layers_stacked_count']):
+        cells.append(GRUCell(step.hyperparams['hidden_dim']))
+
+    return cells
+
+#%% Create loss
+
+def create_loss(step: Tensorflow2ModelStep, expected_outputs: tf.Tensor, predicted_outputs: tf.Tensor) -> tf.Tensor:
+    """
+    Create model loss.
+
+   :param step: The base Neuraxle step for TensorFlow v2 (Tensorflow2ModelStep)
+   :param expected_outputs: expected outputs of shape (batch_size, window_size_future, output_dim)
+   :param predicted_outputs: expected outputs of shape (batch_size, window_size_future, output_dim)
+   :return: loss (a tf Tensor that is a float)
+    """
+    l2 = step.hyperparams['lambda_loss_amount'] * sum(
+        tf.reduce_mean(tf.nn.l2_loss(tf_var))
+        for tf_var in step.model.trainable_variables
+    )
+
+    output_loss = sum(
+        tf.reduce_mean(tf.nn.l2_loss(pred - expected))
+        for pred, expected in zip(predicted_outputs, expected_outputs)
+    ) / float(len(predicted_outputs))
+
+    return output_loss + l2
+
+#%% Create optimizer
+
+def create_optimizer(step: TensorflowV1ModelStep) -> AdamOptimizer:
+    """
+   Create a TensorFlow 2 Optimizer: here the AdamOptimizer.
+
+   :param step: The base Neuraxle step for TensorFlow v2 (Tensorflow2ModelStep)
+    :return: optimizer
+    """
+    return AdamOptimizer(learning_rate=step.hyperparams['learning_rate'])
+
+#%% Load data
+
+exercice_number = 1
+print('exercice {}\n=================='.format(exercice_number))
+
+data_inputs, expected_outputs = generate_data(
+    # See: https://github.com/guillaume-chevalier/seq2seq-signal-prediction/blob/master/datasets.py
+    exercice_number=exercice_number,
+    n_samples=None,
+    window_size_past=None,
+    window_size_future=None
+)
+
+print('data_inputs shape: {} => (n_samples, window_size_past, input_dim)'.format(data_inputs.shape))
+print('expected_outputs shape: {} => (n_samples, window_size_future, output_dim)'.format(expected_outputs.shape))
+
+sequence_length = data_inputs.shape[1]
+input_dim = data_inputs.shape[2]
+output_dim = expected_outputs.shape[2]
+
+batch_size = 100
+epochs = 15
+validation_size = 0.15
+max_plotted_validation_predictions = 10
+
+#%% NN hyperparameters
+
+seq2seq_pipeline_hyperparams = HyperparameterSamples({
+    'hidden_dim': 12,
+    'layers_stacked_count': 2,
+    'lambda_loss_amount': 0.0003,
+    'learning_rate': 0.001,
+    'window_size_future': sequence_length,
+    'output_dim': output_dim,
+    'input_dim': input_dim
+})
+
+print('hyperparams: {}'.format(seq2seq_pipeline_hyperparams))
+
+#%% Deep learning pipeline
+
+#The MeanStdNormalizer helps us normalize data, as a neural network needs to see 
+#normalized data.
+
+feature_0_metric = metric_3d_to_2d_wrapper(mean_squared_error)
+metrics = {'mse': feature_0_metric}
+
+signal_prediction_pipeline = Pipeline([
+    ForEachDataInput(MeanStdNormalizer()),
+    ToNumpy(),
+    PlotPredictionsWrapper(Tensorflow2ModelStep(
+        # See: https://github.com/Neuraxio/Neuraxle-TensorFlow
+        create_model=create_model,
+        create_loss=create_loss,
+        create_optimizer=create_optimizer,
+        expected_outputs_dtype=tf.dtypes.float32,
+        data_inputs_dtype=tf.dtypes.float32,
+        print_loss=False,
+        device_name=chosen_device
+).set_hyperparams(seq2seq_pipeline_hyperparams))]).set_name('SignalPrediction')

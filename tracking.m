@@ -47,7 +47,7 @@ bw = (d >= thresh * 255); %Since graythresh returns a normalized value in the ra
 centroids = zeros(numframes, 2);
 for k = 1:numframes
     L = bwlabel(bw(:, :, k));%we label each individual object (using bwlabel) and compute its corresponding center of mass (using regionprops).
-    s = regionprops(L, 'area', 'centroid');
+    s = regionprops(L, 'area', 'centroid');%meausures a set of properties for each labeled region in the label matrix L
     area_vector = [s.Area];
     [tmp, idx] = max(area_vector);
     centroids(k, :) = s(idx(1)).Centroid;
