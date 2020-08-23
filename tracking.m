@@ -1,4 +1,5 @@
 %% tracking objects
+%taken from https://www.mathworks.com/company/newsletters/articles/tracking-objects-acquiring-and-analyzing-image-sequences-in-matlab.html
 
 %% acquiring video
 
@@ -53,10 +54,18 @@ for k = 1:numframes
     centroids(k, :) = s(idx(1)).Centroid;
 end
 
-%objects motion
+%because the origin of an image is on the top left side and we work with an
+%axis that has an origin in the bottom left side
+rows=size(f,1)
+centroid_y=rows-centroid(:,2);
 
+%objects motion
+figure(1)
 subplot(2, 1, 1)
 plot(t, centroids(:,1)), ylabel('x')
 subplot(2, 1, 2)
-plot(t, centroids(:, 2)), ylabel('y')
+plot(t, centroid_y), ylabel('y')
 xlabel('time (s)')
+
+figure(2)
+plot(centroids(:,1),centroid_y)
