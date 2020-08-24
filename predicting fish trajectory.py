@@ -21,31 +21,31 @@ FEATURE_X = 'x'
 FEATURE_Y = 'y'
 FEATURE_TAIL = 'tail'
 
-
+#loading the data from the fish and extracting the variables
 fish1=scipy.io.loadmat('f1data.mat')
 tail1=fish1[FEATURE_TAIL]
 x1=fish1[FEATURE_X]
 y1=fish1[FEATURE_Y]
 
-tail1=tail1[:-1]
+tail1=tail1[:-1]#discarding the last value of tail1 since the len(tail1)=len(x1)+1
 
-fish_data=np.column_stack((x1,y1,tail1))
+fish_data=np.column_stack((x1,y1,tail1))#stacking the variable vectors into a matrix
 
-fish_df = pd.DataFrame(data=fish_data,columns=['x','y','tail'])
-print(fish_df)
+fish_df = pd.DataFrame(data=fish_data,columns=['x','y','tail'])# converting the data to a dataframe
+print(fish_df.head())
 
 
 #%% exploring the data
 
-date_time=np.arange(0,fish_df.shape[0],1)
-plot_cols = [FEATURE_X,FEATURE_Y,FEATURE_TAIL]
+date_time=np.arange(0,fish_df.shape[0],1) #creating a time vector
+plot_cols = [FEATURE_X,FEATURE_Y,FEATURE_TAIL] #plotting all features
 plot_features = fish_df[plot_cols]
 plot_features.index = date_time
 _ = plot_features.plot(subplots=True)
 
 #%% splitting the data
 
-column_indices = {name: i for i, name in enumerate(fish_df.columns)}
+column_indices = {name: i for i, name in enumerate(fish_df.columns)}#creating a dictionary of column names and indices   
 
 n = len(fish_df) #sequence length
 train_data = fish_df[0:int(n*0.7)]
@@ -316,3 +316,15 @@ print('Labels shape:', wide_conv_window.example[1].shape)
 print('Output shape:', conv_model(wide_conv_window.example[0]).shape)
 
 wide_conv_window.plot(conv_model)
+
+#%% LSTM model
+
+lstm_model = tf.keras.models.Sequential([
+    # Shape [batch, time, features] => [batch, time, lstm_units]
+    tf.keras.layers.LSTM(32, return_sequences=True),
+    # Shape => [batch, time, features]
+    tf.keras.layers.Dense(units=1)
+])
+
+print('Input shape:', wide_window.example[0].shape)
+print('Output shape:', lstm_model(wide_window.example[0]).shape)
