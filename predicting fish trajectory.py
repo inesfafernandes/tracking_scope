@@ -328,3 +328,83 @@ lstm_model = tf.keras.models.Sequential([
 
 print('Input shape:', wide_window.example[0].shape)
 print('Output shape:', lstm_model(wide_window.example[0]).shape)
+
+history = compile_and_fit(lstm_model, wide_window)
+
+IPython.display.clear_output()
+val_performance['LSTM'] = lstm_model.evaluate(wide_window.val)
+performance['LSTM'] = lstm_model.evaluate(wide_window.test, verbose=0)
+
+wide_window.plot(lstm_model)
+
+#%%
+
+OUT_STEPS = 24
+multi_window = WindowGenerator(input_width=24,
+                               label_width=OUT_STEPS,
+                               shift=OUT_STEPS)
+
+multi_window.plot()
+multi_window
+
+class FeedBack(tf.keras.Model):
+  def __init__(self, units, out_steps):
+    super().__init__()
+    self.out_steps = out_steps
+    self.units = units
+    self.lstm_cell = tf.keras.layers.LSTMCell(units)
+    # Also wrap the LSTMCell in an RNN to simplify the `warmup` method.
+    self.lstm_rnn = tf.keras.layers.RNN(self.lstm_cell, return_state=True)
+    self.dense = tf.keras.layers.Dense(num_features)
+    
+feedback_model = FeedBack(units=32, out_steps=OUT_STEPS)
+
+def warmup(self, inputs):
+  # inputs.shape => (batch, time, features)
+  # x.shape => (batch, lstm_units)
+  x, *state = self.lstm_rnn(inputs)
+
+  # predictions.shape => (batch, features)
+  prediction = self.dense(x)
+  return prediction, state
+
+FeedBack.warmup = warmup
+
+def call(self, inputs, training=None):
+  # Use a TensorArray to capture dynamically unrolled outputs.
+  predictions = []
+  # Initialize the lstm state
+  prediction, state = self.warmup(inputs)
+
+  # Insert the first prediction
+  predictions.append(prediction)
+
+  # Run the rest of the prediction steps
+  for n in range(1, self.out_steps):
+    # Use the last prediction as input.
+    x = prediction
+    # Execute one lstm step.
+    x, state = self.lstm_cell(x, states=state,
+                              training=training)
+    # Convert the lstm output to a prediction.
+    prediction = self.dense(x)
+    # Add the prediction to the output
+    predictions.append(prediction)
+
+  # predictions.shape => (time, batch, features)
+  predictions = tf.stack(predictions)
+  # predictions.shape => (batch, time, features)
+  predictions = tf.transpose(predictions, [1, 0, 2])
+  return predictions
+
+FeedBack.call = call
+
+history = compile_and_fit(feedback_model, multi_window)
+ 
+IPython.display.clear_output()
+
+multi_val_performance = {}
+multi_performance = {}
+multi_val_performance['AR LSTM'] = feedback_model.evaluate(multi_window.val)
+multi_performance['AR LSTM'] = feedback_model.evaluate(multi_window.test, verbose=0)
+multi_window.plot(feedback_model)
