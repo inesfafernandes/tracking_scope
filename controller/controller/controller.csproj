@@ -6,7 +6,17 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="HDF.PInvoke" Version="1.10.6.1" />
+    <PackageReference Include="HDF.PInvoke.NETStandard" Version="1.10.502" />
     <PackageReference Include="MathNet.Numerics" Version="4.12.0" />
   </ItemGroup>
 

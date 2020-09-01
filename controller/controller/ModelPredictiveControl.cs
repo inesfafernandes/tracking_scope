@@ -1,58 +1,147 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Numerics;
 
 using MathNet.Numerics.LinearAlgebra;
 using MathNet.Numerics.LinearAlgebra.Double;
 
+
+using HDF.PInvoke;
 
 
 namespace controller
 {
     public class ModelPredictiveControl
     {
-        const int T = 250;
-        const int sizeH = 500;
+        int T;
 
-        Matrix<double> phi = Matrix<double>.Build.Dense(T, T + sizeH);
+        Matrix<double> phiPast;
+        Matrix<double> errorInversion;
+        Vector<double> pastCommands;
+        Vector<double> predictedFishTrajectory;
 
 
+        Vector<double> completeFishTrajectory;
 
-        void CreatePhi()
+
+        public void LoadParameters(/*string file*/)
         {
-            var m = Matrix<double>.Build.Dense(6, 4, (i, j) => 10 * i + j);
+            string file = @"C:\Users\alexa\Documents\Orgerlab Bitbucket\tracking_scope\mpc_params.mat";
+
+            HDF5.ReadDataset(file, "T", out T);
+            HDF5.ReadDataset(file, "N", out int N);
+
+            double[,] arrPhiPast = new double[N-1,T];
+            HDF5.ReadDataset(file, "phi_past", out arrPhiPast);
+            phiPast = Matrix<double>.Build.DenseOfArray(arrPhiPast).Transpose();
+
+            double[,] arrResponseConstant = new double[T, T];
+            HDF5.ReadDataset(file, "response_constant", out arrResponseConstant);
+            errorInversion = Matrix<double>.Build.DenseOfArray(arrResponseConstant).Transpose(); ;
+
+            pastCommands = Vector<double>.Build.Dense(N - 1);
+
+            predictedFishTrajectory = Vector<double>.Build.Dense(T);
+
+            string file2 = @"C:\Users\alexa\Documents\Orgerlab Bitbucket\tracking_scope\mpc_params_traj.mat";
+            double[] arrTrajectory = new double[41999];
+            HDF5.ReadDataset(file2, "x_trajectory", out arrTrajectory);
+            completeFishTrajectory = Vector<double>.Build.DenseOfArray(arrTrajectory);
 
         }
 
-        public void UpdateModel()
+
+
+
+
+        int t = 0;
+        void PredictFishTrajectory()
         {
-
-            /*
-             
-        
-        predicted_fish_trajectory=fish_trajectory(t:t+T-1);
-
-        predicted_stage_trajectory=phi_a*up;
-
-        predicted_error=predicted_fish_trajectory-predicted_stage_trajectory;
-
-        uf=const_up*(predicted_error);%computing u future x axis
-        
-        up=cat(1,up,uf(1));% updating u past by adding the first element of uf as the last element of u past
-
-        up(1)=[];% and discarding the first value of u past
-
-        u=cat(1,u,uf(1));%vector that contains all commands that were sent
- 
-     
-             
-             
-             */
+            predictedFishTrajectory = completeFishTrajectory.SubVector(t++, T);
         }
 
 
 
+        public double UpdateModel()
+        {
+            PredictFishTrajectory();
 
+            var predictedStageTrajectory = phiPast * pastCommands;
+
+            var predictedError = predictedFishTrajectory - predictedStageTrajectory;
+
+            var futureCommands = errorInversion * predictedError;
+
+            var nextCommand = futureCommands[0];
+
+            for (int i = 0; i < pastCommands.Count -1; i++)
+            {
+                pastCommands[i] = pastCommands[i + 1];
+            }
+            pastCommands[pastCommands.Count-1] = nextCommand;
+
+            return nextCommand;
+        }
+    }
+
+
+
+    public static class HDF5
+    {
+
+
+
+        //   static void GetDims()
+        //{
+        //    var space = H5D.get_space(datasetID);
+        //    var ndims = H5S.get_simple_extent_ndims(space);
+        //    ulong[] dims = new ulong[ndims];
+        //    ulong[] maxdims = new ulong[ndims];
+        //    H5S.get_simple_extent_dims(space, dims, maxdims);
+        //}
+
+        public static void ReadDataset(string file, string dataset, out double[] data)
+        {
+            var fileID = H5F.open(file, H5F.ACC_RDONLY);
+            var datasetID = H5D.open(fileID, $"/{dataset}");
+            unsafe
+            {
+                fixed (double* ptr = data)
+                {
+                    var status = H5D.read(datasetID, H5T.NATIVE_DOUBLE, H5S.ALL, H5S.ALL, H5P.DEFAULT, (IntPtr)ptr);
+                }
+            }
+            H5D.close(datasetID);
+            H5F.close(fileID);
+        }
+
+
+        public static void ReadDataset(string file, string dataset, out double[,] data)
+        {
+            var fileID = H5F.open(file, H5F.ACC_RDONLY);
+            var datasetID = H5D.open(fileID, $"/{dataset}");
+            unsafe
+            {
+                fixed (double* ptr = data)
+                {
+                    var status = H5D.read(datasetID, H5T.NATIVE_DOUBLE, H5S.ALL, H5S.ALL, H5P.DEFAULT, (IntPtr)ptr);
+                }
+            }
+            H5D.close(datasetID);
+            H5F.close(fileID);
+        }
+
+        public static void ReadHDF5Dataset(string file, string dataset, out double data)
+        {
+            double[,] tmp = new double[1, 1];
+            ReadDataset(file, dataset, out tmp);
+            data = tmp[0, 0];
+        }
+
+        public static void ReadDataset(string file, string dataset, out int data)
+        {
+            ReadHDF5Dataset(file, dataset, out double tmp);
+            data = (int)tmp;
+        }
     }
 }
