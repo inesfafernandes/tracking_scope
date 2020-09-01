@@ -3,14 +3,14 @@
 function [under_100_not_moving,under_100_moving,velocity_filt]= moving_calculator(x_trajectory, output_trajectory)
 
 threshold_vel=0.0005;%value below which the fish is not considered to be  moving
-threshold_error=0.01;% cm
+threshold_error=0.02;% cm
 not_moving=[];
 moving=[];
 
 if length(x_trajectory)<length(output_trajectory)
     N=abs(length(x_trajectory)-length(output_trajectory));
     output_trajectory=output_trajectory(N+1:end);
-    velocity_filt= diff(sgolayfilt(output_trajectory,2,13));
+    velocity_filt= abs(diff(sgolayfilt(output_trajectory,2,13)));
     error_direct_command=x_trajectory-output_trajectory;
     
     % divide into 2 groups moving and not moving based on a velocity

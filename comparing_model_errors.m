@@ -168,7 +168,7 @@ subplot(2,4,7)
 labels = {'<100micro','>100micro'};
 pie(pie_MPC_T100_naive_model)
 legend(labels)
-<<<<<<< HEAD
+
 
 figure(6)
 subplot(2,4,1)
@@ -199,6 +199,4 @@ subplot(2,4,7)
 boxplot(RMSE_MPC_T100_naive_model);
 ylabel('cm')
 title('error MPC T100 naive model')
-=======
->>>>>>> master
 

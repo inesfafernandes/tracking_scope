@@ -91,3 +91,12 @@ labels = {'<100micro','>100micro'};
 pie(pie_250_naive_moving);
 legend(labels)
 title('moving T=250 naive')
+
+%% cumulative probability plots
+
+err=error_MPC_T100_know_future%altere it to use the full trajectory and use one that only acounts for the moving part
+xi=0:50:750
+a=hist(abs(err)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'cyan')
+bar(xi,cumsum(a)/sum(a),'b')
+
