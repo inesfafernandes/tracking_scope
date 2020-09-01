@@ -101,6 +101,8 @@ plot(tt,XX,tt,xx,tt,yy,tt,sqrt(PP));
 legend('truth','state','measurement','sigma');
 
 %%
+%file:///C:/Users/TeachinglabA/Downloads/Discrete-timeKalmanfilter.pdf
+
 delT = 1;
 F = [ 1 delT; 0 1 ];
 H = [ 1 0 ];
@@ -157,7 +159,41 @@ yt = [y pos(1,2) pos(end,2)];
 text(xt,yt,{'First measurement','First position','Last position'})
 legend('Object position', 'Predicted position', 'Corrected position')
 
-%other optio to check
+%other option to check
+
+%% Prediction of 2D moving particle
+%https://www.datasciencecentral.com/profiles/blogs/using-bayesian-kalman-filter-to-predict-positions-of-moving
+% 
+% %state vector includes velocity and position for both dimensions
+% px=1;
+% vx=2;
+% py=3;
+% vy=1;
+% s=[px vx py vy]';
+% 
+% dt=0.033; %sec
+% A=[ 1 dt; 0 1 ];
+% cov=diag([1 1 1 1]);
+% 
+% s=A*s+cov;
+% 
+% %measurement model
+% z=[px py]';
+% %C=;%observation matrix 2x4, with two ones and six zeros
+% 
+% noise_cov=diag([1 1]);
+% 
+% z=C*s+noise_cov
+% 
+% % P=A*P*A'+cov;
+% % R=C*P*C'+noise_cov;
+% % K=P*C'R^-1-K*C*P*C'*R^-1
+% 
+% x=A*x+K(z-C*A*x);
+% P=P-K*C*P
+
+
+
 
 
 
