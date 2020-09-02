@@ -97,11 +97,8 @@ title('moving T=250 naive')
 err=x_trajectory-model_direct_command(2:end);%altere it to use the full trajectory and use one that only acounts for the moving part
 xi=0:50:750;
 a=hist(abs(err)*10000,xi);
-bar(xi,cumsum(a)/sum(a),'b')
-hold on
-[~,~,~,err_moving]=moving_calculator(x_trajectory,model_direct_command);
-xi=0:50:750;
-a=hist(abs(err_moving)*10000,xi);
 bar(xi,cumsum(a)/sum(a),'cyan')
+bar(xi,cumsum(a)/sum(a),'b')
 
+[~,~,~,err_moving]
 
