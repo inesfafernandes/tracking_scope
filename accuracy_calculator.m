@@ -1,3 +1,4 @@
+
 function acc= accuracy_calculator(RMSE_model,thres)
 
 acc=0;
@@ -7,4 +8,3 @@ for i=1:length(RMSE_model)
     end
 end
 
-end

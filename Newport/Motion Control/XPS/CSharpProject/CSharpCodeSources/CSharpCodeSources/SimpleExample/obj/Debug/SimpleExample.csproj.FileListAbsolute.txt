@@ -1,0 +1,10 @@
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\bin\Debug\SimpleExample.exe.config
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\bin\Debug\SimpleExample.exe
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\bin\Debug\SimpleExample.pdb
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\obj\Debug\SimpleExample.csprojAssemblyReference.cache
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\obj\Debug\SimpleExample.FirmwareVersionGet.resources
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\obj\Debug\SimpleExample.Properties.Resources.resources
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\obj\Debug\SimpleExample.csproj.GenerateResource.cache
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\obj\Debug\SimpleExample.csproj.CoreCompileInputs.cache
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\obj\Debug\SimpleExample.exe
+C:\Newport\Motion Control\XPS\CSharpProject\CSharpCodeSources\CSharpCodeSources\SimpleExample\obj\Debug\SimpleExample.pdb
