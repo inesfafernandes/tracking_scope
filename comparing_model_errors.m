@@ -18,6 +18,20 @@ load('output_MPC_T50_naive_model.mat')
 MPC_T50_naive_model=output;
 load('output_MPC_T100_naive_model.mat')
 MPC_T100_naive_model=output;
+
+%FULL TRAJECTORY
+load('output_read_position_full.mat')
+model_direct_command_full=inScanDat;
+load('output_MPC_T170_predicted_full.mat')
+MPC_T170_know_future=output;
+load('output_MPC_T250_predicted_full.mat')
+MPC_T250_know_future=output;
+load('output_MPC_T170_naive_model_full.mat')
+MPC_T170_naive_model=output;
+load('output_MPC_T250_naive_model_full.mat')
+MPC_T250_naive_model=output;
+%
+
 % 
 % RMSE_direct_command= sqrt(mean((xstar-model_direct_command(2:end)).^2)); %root mean square error
 % RMSE_MPC_T20_know_future= sqrt(mean((xstar(20:end)-MPC_T20_know_future).^2));
@@ -34,6 +48,14 @@ RMSE_MPC_T100_know_future=RMSE_calculator(xstar,MPC_T100_know_future);
 RMSE_MPC_T20_naive_model=RMSE_calculator(xstar,MPC_T20_naive_model);
 RMSE_MPC_T50_naive_model=RMSE_calculator(xstar,MPC_T50_naive_model);
 RMSE_MPC_T100_naive_model=RMSE_calculator(xstar,MPC_T100_naive_model);
+
+%FULL TRAJECTORY
+error_direct_command_full=x_trajectory-model_direct_command_full(2:end);
+error_MPC_T170_know_future=x_trajectory(1:end-(abs(length(x_trajectory)-length(MPC_T170_know_future))))-MPC_T170_know_future;
+error_MPC_T250_know_future=x_trajectory(1:end-(abs(length(x_trajectory)-length(MPC_T250_know_future))))-MPC_T250_know_future;
+error_MPC_T170_naive_model=x_trajectory-MPC_T170_naive_model(2:end);
+error_MPC_T250_naive_model=x_trajectory-MPC_T250_naive_model(2:end);
+%
 
 error_direct_command=xstar-model_direct_command(2:end);
 error_MPC_T20_know_future=xstar(1:end-19)-MPC_T20_know_future;
@@ -203,3 +225,17 @@ boxplot(RMSE_MPC_T100_naive_model);
 ylabel('cm')
 title('error MPC T100 naive model')
 
+
+%% Full trajectory plots
+
+figure(1)
+hold on
+plot(error_direct_command_full*10000);
+plot(error_MPC_T170_know_future*10000);
+plot(error_MPC_T250_know_future*10000);
+
+legend('Error direct command','Error MPC T50 naive model','Error MPC T50 know future');
+xlabel('frame of 700Hz')
+ylabel('um')
+title('Error');
+hold off

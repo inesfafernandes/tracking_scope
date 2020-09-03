@@ -1,7 +1,7 @@
 %% Reads and writes a signal, but not in a continous form
 
 dq = daq("ni"); %create data acquisition
-dq.Rate = 1000; %set the generation scan rate; rate cant be the same as K (check system_identification_fc)
+dq.Rate = 1000; %set the generation scan rate; 
 addoutput(dq, "Dev1", "ao1", "Voltage");% adds analog output channel 
 addinput(dq, "Dev1", "ai1", "Voltage");% adds analog input channel 
 

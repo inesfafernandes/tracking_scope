@@ -94,11 +94,82 @@ title('moving T=250 naive')
 
 %% cumulative probability plots
 
-err=x_trajectory-model_direct_command(2:end);%altere it to use the full trajectory and use one that only acounts for the moving part
+figure(1) %direct command
+
+err_direct=x_trajectory-model_direct_command(2:end);
 xi=0:50:750;
-a=hist(abs(err)*10000,xi);
-bar(xi,cumsum(a)/sum(a),'cyan')
+a=hist(abs(err_direct)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'blue')
+hold on
+[~,~,~,err_moving_direct]=moving_calculator(x_trajectory,model_direct_command);
+xi=0:50:750;
+a=hist(abs(err_moving_direct)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'magenta')
+title('direct command')
+xlabel('error (um)')
+ylabel('Cumulative probability')
+legend('All the time', 'In motion')
+
+figure(2)
+
+err_170_know=x_trajectory(1:end-(abs(length(x_trajectory)-length(MPC_T170_know_future))))-MPC_T170_know_future;
+xi=0:50:750;
+a=hist(abs(err_170_know)*10000,xi);
 bar(xi,cumsum(a)/sum(a),'b')
+hold on
+[~,~,~,err_moving_170_know_future]=moving_calculator(x_trajectory,MPC_T170_know_future);
+xi=0:50:750;
+a=hist(abs(err_moving_170_know_future)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'magenta')
+title('170 know future')
+xlabel('error (um)')
+ylabel('Cumulative probability')
+legend('All the time', 'In motion')
 
-[~,~,~,err_moving]
+figure(3)
 
+err_250_know=x_trajectory(1:end-(abs(length(x_trajectory)-length(MPC_T250_know_future))))-MPC_T250_know_future;
+xi=0:50:750;
+a=hist(abs(err_250_know)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'b')
+hold on
+[~,~,~,err_moving_250_know_future]=moving_calculator(x_trajectory,MPC_T250_know_future);
+xi=0:50:750;
+a=hist(abs(err_moving_250_know_future)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'magenta')
+title('250 know future')
+xlabel('error (um)')
+ylabel('Cumulative probability')
+legend('All the time', 'In motion')
+
+figure(4)
+
+err_170_naive=x_trajectory-MPC_T170_naive_model(2:end);
+xi=0:50:750;
+a=hist(abs(err_170_naive)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'b')
+hold on
+[~,~,~,err_moving_170_naive]=moving_calculator(x_trajectory,MPC_T170_naive_model);
+xi=0:50:750;
+a=hist(abs(err_moving_170_naive)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'magenta')
+title('170 naive model')
+xlabel('error (um)')
+ylabel('Cumulative probability')
+legend('All the time', 'In motion')
+
+figure(5)
+
+err_250_naive=x_trajectory-MPC_T250_naive_model(2:end);
+xi=0:50:750;
+a=hist(abs(err_250_naive)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'b')
+hold on
+[~,~,~,err_moving_250_naive]=moving_calculator(x_trajectory,MPC_T250_naive_model);
+xi=0:50:750;
+a=hist(abs(err_moving_250_naive)*10000,xi);
+bar(xi,cumsum(a)/sum(a),'magenta')
+title('250 naive model')
+xlabel('error (um)')
+ylabel('Cumulative probability')
+legend('All the time', 'In motion')

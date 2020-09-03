@@ -1,4 +1,4 @@
-%%moving calculator
+%% moving calculator
 
 function [under_100_not_moving,under_100_moving,velocity_filt,error_moving]= moving_calculator(x_trajectory, output_trajectory)
 
