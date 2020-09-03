@@ -75,6 +75,14 @@ error_MPC_T100_naive_model=xstar-MPC_T100_naive_model(2:end);
 
 max_errors=[max_error_direct_command, max_error_MPC_T50_naive_model, 0.0313, max_error_MPC_T50_know_future];
 
+%FULL TRAJECTORY
+max_error_direct_command_full=max(abs(error_direct_command_full));
+max_error_170_know_future=max(abs(error_MPC_T170_know_future));
+max_error_250_know_future=max(abs(error_MPC_T250_know_future));
+max_error_170_naive_model=max(abs(error_MPC_T170_naive_model));
+max_error_250_naive_model=max(abs(error_MPC_T250_naive_model));
+max_errors_full=[max_error_direct_command_full,max_error_170_naive_model,max_error_250_naive_model ,0.0313, max_error_170_know_future, max_error_250_know_future];
+%
 
 figure(1)
 hold on
@@ -233,9 +241,41 @@ hold on
 plot(error_direct_command_full*10000);
 plot(error_MPC_T170_know_future*10000);
 plot(error_MPC_T250_know_future*10000);
-
-legend('Error direct command','Error MPC T50 naive model','Error MPC T50 know future');
+plot(error_MPC_T170_naive_model*10000);
+plot(error_MPC_T250_naive_model*10000);
+legend('Error direct command','Error MPC T170 know future','Error MPC T250 know future','Error MPC T170 naive model','Error MPC T250 naive model');
 xlabel('frame of 700Hz')
 ylabel('um')
 title('Error');
 hold off
+
+label_full = cell(1,6);
+label_full{1}='Direct command'; label_full{2}='MPC T170 naive model'; label_full{3}='MPC T250 naive model' ; label_full{4}='?'; label_full{5}='MPC T170 know future' ;label_full{6}='MPC T250 naive model';  
+
+figure(2)
+bar(max_errors_full*10000);
+set(gca,'xticklabel', label_full); 
+title('Maximum errors')
+ylabel('um')
+
+%% input vs output direct command or lab meeting
+
+figure(1)
+plot(x_trajectory)
+hold on
+plot(model_direct_command_full(2:end))
+hold off
+title ('input vs output')
+xlabel ('frame of 700Hz')
+ylabel('cm')
+
+%zoom in
+figure(2)
+plot(x_trajectory)
+hold on
+plot(model_direct_command_full(2:end))
+hold off
+title ('input vs output')
+xlabel ('frame of 700Hz')
+axis([1.5e4 2.3e4 0.6 1.6])
+ylabel('cm')

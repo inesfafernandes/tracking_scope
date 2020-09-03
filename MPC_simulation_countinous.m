@@ -47,22 +47,6 @@ for t=1:length(fish_trajectory)-T
     u=cat(1,u,uf(1));%vector that contains all commands that were sent
 end
 
-%taking into consideration tail movement
-% for t=1:length(fish_trajectory)
-%     if theta<= m
-%         uf=const_up*((fish_trajectory(t)*model_m)-phi_a*up);%computing u future x axis
-%         %uf_y=const_up*((fish_trajectory_y(t)*model_x)-phi_a*up); %computing u future y axis
-%         up=cat(1,up,uf(1));% updating u past by adding the first element of uf as the last element of u past
-%         up(1)=[];% and discarding the first value of u past
-%         u=cat(1,u,uf(1));%vector that contains all commands that were sent
-%     else
-%         uf=const_up*((fish_trajectory(t)*model_n)-phi_a*up);%computing u future x axis
-%         %uf_y=const_up*((fish_trajectory_y(t)*model_n)-phi_a*up); %computing u future y axis
-%         up=cat(1,up,uf(1));% updating u past by adding the first element of uf as the last element of u past
-%         up(1)=[];% and discarding the first value of u past
-%         u=cat(1,u,uf(1));%vector that contains all commands that were sent
-%     end
-% end
 
 figure(1)
 hold on
